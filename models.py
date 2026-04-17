@@ -1,14 +1,22 @@
 from django.db import models
 from django.conf import settings
-from .models import Lesson
 
-class Question(models.fields.CharField):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+# ... (Giữ nguyên các model Course, Lesson cũ nếu có)
+
+class Question(models.Model):
+    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
     grade = models.IntegerField(default=1)
 
     def __str__(self):
         return self.question_text
+
+    def is_get_score(self, selected_ids):
+        all_answers = self.choice_set.filter(is_correct=True).count()
+        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        if all_answers == selected_correct:
+            return True
+        return False
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
