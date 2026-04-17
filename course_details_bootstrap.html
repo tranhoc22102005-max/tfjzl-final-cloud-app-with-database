@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Course Name: {{ course.name }}</h1>
+        <form action="{% url 'onlinecourse:submit' course.id %}" method="post">
+            {% csrf_token %}
+            {% for lesson in course.lesson_set.all %}
+                <div class="card mt-3">
+                    <div class="card-header"><h5>Lesson: {{ lesson.title }}</h5></div>
+                    <div class="card-body">
+                        {% for question in lesson.question_set.all %}
+                            <p><strong>{{ question.question_text }}</strong></p>
+                            {% for choice in question.choice_set.all %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="choice_{{ question.id }}" id="{{ choice.id }}" value="{{ choice.id }}">
+                                    <label class="form-check-label" for="{{ choice.id }}">
+                                        {{ choice.choice_text }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <button class="btn btn-primary mt-3" type="submit">Submit Exam</button>
+        </form>
+    </div>
+</body>
+</html>
